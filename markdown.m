@@ -1,4 +1,6 @@
 Analyse du sujet : Born2beroot
+Guide pour lùinstallation : https://baigal.medium.com/born2beroot-e6e26dfb50ac
+Une adresse IP est un numéro didentification attribué à un ordinateur connecté à un réseau Internet. Concrètement, ce matricule sert à identifier les machines et à leur permettre de dialoguer entre elles, en échangeant des données sur Internet.
 
 # Un serveur = dispo informatique qui offre différents services à des clients (en soi ce sont des ordis(grosse armoire avec pleins de tiroirs et chaque tiroir = ordi) mais avec les spécificités suivantes :
 - grande puissance 
@@ -8,6 +10,8 @@ Analyse du sujet : Born2beroot
 - bcp de Ram, pour mettre en cache 
 Pas besoin de carte graphique ou carte son 
 
+En informatique, un point de montage est un répertoire à partir duquel sont accessibles les données se trouvant sous forme dun système de fichiers sur une partition de disque dur ou un périphérique.
+
 Comme pour lordinateur, on y installe un système dexploitation (Linux sans bureau, Windows Server OSX Server): Linux possède plusieurs distributions (certaines orientées bureau et dautres ortientées service) (Debian/Centos/Ubuntu/Fedora/Archlinux).
 Pourquoi Debian ?
 Debian est une distri 
@@ -15,10 +19,35 @@ Debian est une distri
 - facile a utiliser
 - mise a jour ne sont pas trop fréquentes ( av : version stable et packages bien mis à jour et sécurisés)
 
-# Partition
+# Partition : http://www.minix3.org/doc/partitions-french.html
 = découpage du disque dur en plusieurs parties => Partitions.
 Il nest pas possible dutiliser un disque sil na pas été découpé en partitions.
+3 types de partition : 
+- logique : stockage des données
+- étendue 
+- primaire : pour OS
+Un DD peut avoir jusqua 4 partitions primaires avec un max de 2 To max/partition pour les anciens (MBR/BIOS). Aujourdhui, et vu que la capacite de stockage a augmente, creation de GPT/UEFI pouvant contenir jusqua 128 partitions max et 256to/partition.
+Le point de montage est le répertoire de larborescence qui abritera le contenu du système de fichiers de la partition sélectionnée. Ainsi, une partition montée sur /home/ est traditionnellement prévue pour contenir les données des utilisateurs.
+Si ce répertoire se nomme « / », on parle alors de la racine de larborescence, donc de la partition qui va réellement accueillir le système Debian.
+une des quatre partitions primaires peut être désignée comme une partition étendue qui peut être divisé en plusieurs logique partitions. Les partitions logiques ne peuvent jamais être des partitions primaires.
+Une partition étendue permet jusquà 24 partitions de disques logiques. 
 
+En sélectionnant une partition, on peut indiquer la manière dont on va lutiliser :
+    >la formater et lintégrer à larborescence en choisissant un point de montage ;
+    >lemployer comme partition déchange (swap) ;
+    >en faire un volume physique pour chiffrement (pour protéger la confidentialité des données de certaines partitions, voir plus loin) ;
+    >en faire un volume physique pour LVM (notion détaillée plus loin dans ce chapitre) ;   
+    >lutiliser comme périphérique RAID (voir plus loin dans ce chapitre) ;
+    >ou ne pas lexploiter et la laisser inchangée.
+
+# LVM
+LVM, ou Logical Volume Manager, est une autre approche servant à abstraire les volumes logiques des disques physiques. Le but principal nétait pas ici de gagner en fiabilité des données mais en souplesse dutilisation. LVM permet en effet de modifier dynamiquement un volume logique, en toute transparence du point de vue des applications. Par exemple, on peut ainsi ajouter de nouveaux disques, migrer les données dessus et récupérer les anciens disques ainsi libérés, sans démonter le volume.
+
+
+
+#SELinux et AppArmor
+AppArmor = Cree justement pour pallier aux difficultes de SElinux. logiciel de securite pour Linux. AppArmor permet à ladministrateur système dassocier à chaque programme un profil de sécurité qui restreint ses accès au système dexploitation
+SELinux =  Security Enhanced linux.
 # Comment faire pour créer un serveur 
 1. Pour installer des serveurs, il faut des logiciels particuliers pour permettre au serveu de faire à certaines choses(envoi de mails, recup de ip.... comme Mongo DB, Postfix, Bind9, iptables, Apache...)
 
@@ -34,6 +63,18 @@ Grub = permet dindiquer à lordinateur sur quoi il doit installer
     - ls -tF :  permet de rajouter un slash a la fin.
     - ls -F
 - chmod : changement de droits 
+
+# Commandes spécfiques pour Debian
+- dpkg = package manager for Debian. pkg is a tool to install, build, remove and manage Debian
+       packages. The primary and more user-friendly front-end for dpkg
+       is aptitude(1). dpkg itself is controlled entirely via command
+       line parameters, which consist of exactly one action and zero or
+       more options. The action-parameter tells dpkg what to do and
+       options control the behavior of the action in some way.
+- sudo : "substitute user do", "super user do"  ou "switch user do" = « se substituer à lutilisateur pour faire », « faire en tant que super-utilisateur  » ou « changer dutilisateur pour faire »
+Cette commande permet à un administrateur système daccorder à certains utilisateurs (ou groupes dutilisateurs) la possibilité de lancer une commande en tant quadministrateur, ou en tant quautre utilisateur, tout en conservant une trace des commandes saisies et des arguments.
+- lsblk : La commande lsblk permet dobtenir la liste et les caractéristiques des disques et de leurs partitions.
+La commande ne nécessite pas les droits administrateurs pour être exécutée.
 
 # Architecture de Linux = A partir de la racine :
 - bin et sbin = contient tous les exécutables utiles pr le systeme
@@ -103,3 +144,17 @@ Attention, pour passer de root à user : EXIT
 - Limiter à des ips particulières.
 
 Avec OVH, on peut recover notre serveur au cas où.
+
+CRON et CRONTab ; tache recurrente 
+Quand on adminitre un sys, on a recours a des taches recurrentes (ex : si jai un site de-commerce => jenvoie des factures tous les mois a mes clients)
+- crontab -l  #Pour lister toutes les taches en cours 
+- crontab -e # Pour ajouter ou modifier de taches mais on a besoin dun editeur : NANO
+
+IPTABLES 
+Installer un parefeu pour controler les connexions entrantes et sortantes
+on va tout fermer et rouvrir que les ports que lon souhaite 
+- Pour savoir sil existe dans notre ordi  : sudo iptables sinon : apt-get install
+
+#Confguration : Partie obligatoire 
+
+1. installer sudo (il faut etr en root)
