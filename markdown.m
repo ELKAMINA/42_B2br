@@ -41,7 +41,7 @@ En sélectionnant une partition, on peut indiquer la manière dont on va lutilis
     >ou ne pas lexploiter et la laisser inchangée.
 
 # LVM
-LVM, ou Logical Volume Manager, est une autre approche servant à abstraire les volumes logiques des disques physiques. Le but principal nétait pas ici de gagner en fiabilité des données mais en souplesse dutilisation. LVM permet en effet de modifier dynamiquement un volume logique, en toute transparence du point de vue des applications. Par exemple, on peut ainsi ajouter de nouveaux disques, migrer les données dessus et récupérer les anciens disques ainsi libérés, sans démonter le volume.
+LVM, ou Logical Volume Manager, est vune autre approche serant à abstraire les volumes logiques des disques physiques. Le but principal nétait pas ici de gagner en fiabilité des données mais en souplesse dutilisation. LVM permet en effet de modifier dynamiquement un volume logique, en toute transparence du point de vue des applications. Par exemple, on peut ainsi ajouter de nouveaux disques, migrer les données dessus et récupérer les anciens disques ainsi libérés, sans démonter le volume.
 
 
 
@@ -73,7 +73,30 @@ Grub = permet dindiquer à lordinateur sur quoi il doit installer
        options control the behavior of the action in some way.
 - sudo : "substitute user do", "super user do"  ou "switch user do" = « se substituer à lutilisateur pour faire », « faire en tant que super-utilisateur  » ou « changer dutilisateur pour faire »
 Cette commande permet à un administrateur système daccorder à certains utilisateurs (ou groupes dutilisateurs) la possibilité de lancer une commande en tant quadministrateur, ou en tant quautre utilisateur, tout en conservant une trace des commandes saisies et des arguments.
+https://linuxhint.com/sudo_linux/
+
+on peut configurer les autorisations de sudo dans un fichier nommé sudoers qui na aucun droit decriture mais uniquement de lecture  (le fichier se trouve dans le dossier etc. on edite ce fichier avec lediteur dedie : visudo)
+Pour configurer et creer des droits pour un utilisateur : creer un fichier dns etc/sudoers.d putot que directement modifier le fichier : visudo.
+
+
 - lsblk : La commande lsblk permet dobtenir la liste et les caractéristiques des disques et de leurs partitions.
+- getent : permet de voir les membres dun groupe.
+    1. Si on veut savoir qui appartient a un groupe : getent group NOMDUGROUPE. par ex : getent group sudo
+        output => sudo:x:27:ael-khat
+            group is the groups name
+            password is the encrypted group password, empty field signifies no password, x bit signifies the password is in the file /etc/gshadow
+            GID is the Group ID
+            user(s) is the list of users member of this group, empty means this group has no member
+    2. Si on veut connaitre a quel groupe appartient un utilisateur : getent group LOGIN. par ex : getent group ael-khat
+
+- tty : tty est une commande Unix qui affiche sur la sortie standard le nom du fichier connecté sur lentrée standard. Lorigine du nom tty vient de langlais teletypewriter, qui se traduit téléscripteur, et a été abrégé en « TTY ».
+Lorsque le programme sexécute, il affiche quelque chose comme ceci :
+        $ tty
+        /dev/pts/4
+
+When requiretty is set, sudo must be run from a logged-in terminal session (a tty). This prevents sudo from being used from daemons or other detached processes like cronjobs or webserver plugins. It also means you cant run it directly from an ssh call without setting up a terminal session.
+This can prevent certain kinds of escalation attacks. For example, if I have a way to modify the crontab for a user who has NOPASSWD sudo permissions, I could use that to kick off a job as root. With requiretty, I cant do that...
+...easily. This restriction is not particularly hard to circumvent, and so generally isnt all that useful compared to the valid use cases it breaks. Red Hat used to use it, but removed it a few years ago.
 La commande ne nécessite pas les droits administrateurs pour être exécutée.
 
 # Architecture de Linux = A partir de la racine :
@@ -82,7 +105,7 @@ La commande ne nécessite pas les droits administrateurs pour être exécutée.
 - etc : config de tous nos logiciels (vont être stockés les dif confg)
 - mnt et media : permettent de monter les choses (quand on a des CD ou autre -> cest dans mnt)
 - root : correspond à lutilisateur root (administrateur)
-- serveu
+- serveur
 - boot
 - opt : optional pr stocker des choses qui ne rentrent pas dans larchi Linux.
 - var : TRES IMPORTANT accessible en écriture et va contenir tous les fichiers qui vont etre modifiés
@@ -155,6 +178,66 @@ Installer un parefeu pour controler les connexions entrantes et sortantes
 on va tout fermer et rouvrir que les ports que lon souhaite 
 - Pour savoir sil existe dans notre ordi  : sudo iptables sinon : apt-get install
 
+BASH 
+Bourne Again SHell
+
 #Confguration : Partie obligatoire 
 
 1. installer sudo (il faut etr en root)
+
+What is the secure Path 
+The secure_path value, if set, will be used as PATH environment variable for the commands you run using sudo.
+That means, when you run e.g. sudo apt update, the system will try to look up the command apt in the directories specified in the secure_path, in the specified order.
+Now if you add a directory to which non-root users have write access to the secure_path, you can do it in two positions:
+append to the end of the secure_path list, with least priority
+insert at the beginning or in the middle of the secure_path list, with higher priority.
+Appending to the end is almost safe if as it will not change how existing commands will be resolved, it just allows executables from a different directory to be executed without explicitly specifying their location as well. The fact that this additional directory is writeable for non-root users allows them to put malicious files in there without elevated privileges though, so you have to be careful when typing any command that is located there (willingly or by mistyping something else).
+However, if you put your directory not as last element but with higher priority, the contents of that directory will shadow and override those from the locations that come after it in secure_path. For example, if you put your user directory first and it contains a (malicious?) executable named apt, the next time you run sudo apt update you will get a surprise...
+I would also never directly add the home directory to any PATH or secure_path, but instead create a dedicated directory, e.g. /home/USERNAME/bin for that, which only contains the executables I want to have on my PATH and nothing else.
+
+
+#KERNEL
+Un kernel désigne lune des parties dun système dexploitation. On le traduit dailleurs souvent en français par noyau de système dexploitation. La mission du kernel est double : gérer les ressources dun ordinateur et faciliter la communication entre les matériels et les logiciels de lordinateur.
+
+#Connaitre larchitecture du systeme dexploitation et la version du kernel
+uname -a donne toutes les infos
+uname -m : architecture du systeme 
+uname -v : version du kernel
+
+#Processeur
+Processuer a des coeurs  
+Coeurs : chaque coeur est independaant et fqit ses propres taches et ensuite on reunit tout grace au processeur 
+Fils dexecution : fils pour amd et thread pr intel. Seq de cmd dexection envoyee au coeur a travers les fils dexec
+Coeur logique : puissance de calcul du processeur. Pr le calcul des coeurs logiques : nbre de threads/coeur
+    Si on a un processeur avec 4 coeurs et 1 fil/coeur donc 4 coeurs logiques
+    Si processeur a plus de fils que de coeurs ? plusieurs canaux dinfo envoyes au coeur et pas en meme temps. si il a fini le premier fil, passe le sui
+Coeur physique : coeur physiquement a linterieur du processeur
+
+CPU = Threads par cœur X cœurs par socket X sockets
+
+Nombre de processeur physique 
+grep -c processor /proc/cpuinfo
+
+df = short for disk free
+Pour tcp connexions (netstat deprecated)
+https://unix.stackexchange.com/questions/258711/alternative-to-netstat-s
+
+adresse MAC, aussi appelée adresse physique, est une séquence composée de chiffres et de lettres codée sur 48 bits, soit 6 octets. Elle est couramment présentée au format hexadécimal, en séparant les octets par un double point ou un tiret (par exemple : 00:37:6C:E2:EB:62).
+L’adresse MAC (pour Media Access Control) est l’adresse physique d’un périphérique réseau. Chaque adresse MAC est sensée être unique au monde. On peut donc considérer qu’elle constitue une sorte de plaque d’immatriculation des appareils électroniques. L’adresse MAC peut être modifiée dans certains cas. Cependant, cela reste assez rare car elle est activée dès la fabrication en usine.
+La fonctionnalité première d’une adresse MAC est l’identification de chaque périphérique. Elle est utilisée sur la plupart des types de réseaux en vogue de nos jours, traditionnels (ethernet par exemple) ou mobile (Wi-Fi, Bluetooth…). L’adresse MAC étant unique, elle est souvent utilisée dans le filtrage de connexion à une borne WiFi par exemple. C’est en effet le moyen le plus efficace de bloquer l’accès à un appareil, plutôt que de bloquer une adresse IP qui pourra facilement être modifiée.
+
+Mon monitoring
+
+echo "#Architecture: "; uname -a
+echo "#CPU physical: "; grep processor /proc/cpuinfo | wc -l 
+echo "#vCPU: "; grep processor /proc/cpuinfo | wc -l 
+echo "#Memory Usage: "; free -m | awk 'NR==2{printf "%s/%sMB (%.2f%%)", $3,$2,$3*100/$2}'
+echo "#Disk Usage: "; df -H | awk '$NF=="/"{printf "%d/%dGB (%s)", $3,$2,$5}'
+echo "#CPU Load: "; uptime | grep load | awk '{printf "%.2f $3,$2,$5}'
+echo "#Last boot: "; who -b | awk '{print $3" "$4}'
+echo "#LVM use: "; sudo lvm lvdisplay | grep Status | uniq | awk '{if ($3) {print "yes";exit;} else {print "no"}}'
+#echo "#LVM use: "; if cat /etc/fstab | grep -q "/dev/mapper/"; then echo "yes"; else echo "no"; fi
+echo "#Connexions TCP: "; ss -nt | wc -l | awk '{print $1-1" ""ESTABLISHED"}'
+echo "#User log: "; uptime | awk '{print $4}'
+echo "#Network: "; echo -n "IP " && ip route list | grep link | awk '{print $9}' | tr "\n" "  " && echo -n "(" && ip link show | grep link/ether | awk '~{print $2}' | tr "\n" ")" && printf "\n"
+echo "Sudo: "; cat /var/log/sudo/sudologs.log | wc -l | tr "\n" " " && echo "cmd 
