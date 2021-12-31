@@ -223,8 +223,8 @@ Pour tcp connexions (netstat deprecated)
 https://unix.stackexchange.com/questions/258711/alternative-to-netstat-s
 
 adresse MAC, aussi appelée adresse physique, est une séquence composée de chiffres et de lettres codée sur 48 bits, soit 6 octets. Elle est couramment présentée au format hexadécimal, en séparant les octets par un double point ou un tiret (par exemple : 00:37:6C:E2:EB:62).
-L’adresse MAC (pour Media Access Control) est l’adresse physique d’un périphérique réseau. Chaque adresse MAC est sensée être unique au monde. On peut donc considérer qu’elle constitue une sorte de plaque d’immatriculation des appareils électroniques. L’adresse MAC peut être modifiée dans certains cas. Cependant, cela reste assez rare car elle est activée dès la fabrication en usine.
-La fonctionnalité première d’une adresse MAC est l’identification de chaque périphérique. Elle est utilisée sur la plupart des types de réseaux en vogue de nos jours, traditionnels (ethernet par exemple) ou mobile (Wi-Fi, Bluetooth…). L’adresse MAC étant unique, elle est souvent utilisée dans le filtrage de connexion à une borne WiFi par exemple. C’est en effet le moyen le plus efficace de bloquer l’accès à un appareil, plutôt que de bloquer une adresse IP qui pourra facilement être modifiée.
+Ladresse MAC (pour Media Access Control) est ladresse physique dun périphérique réseau. Chaque adresse MAC est sensée être unique au monde. On peut donc considérer quelle constitue une sorte de plaque dimmatriculation des appareils électroniques. Ladresse MAC peut être modifiée dans certains cas. Cependant, cela reste assez rare car elle est activée dès la fabrication en usine.
+La fonctionnalité première dune adresse MAC est lidentification de chaque périphérique. Elle est utilisée sur la plupart des types de réseaux en vogue de nos jours, traditionnels (ethernet par exemple) ou mobile (Wi-Fi, Bluetooth…). Ladresse MAC étant unique, elle est souvent utilisée dans le filtrage de connexion à une borne WiFi par exemple. Cest en effet le moyen le plus efficace de bloquer laccès à un appareil, plutôt que de bloquer une adresse IP qui pourra facilement être modifiée.
 
 Mon monitoring
 
@@ -241,3 +241,37 @@ echo "#Connexions TCP: "; ss -nt | wc -l | awk '{print $1-1" ""ESTABLISHED"}'
 echo "#User log: "; uptime | awk '{print $4}'
 echo "#Network: "; echo -n "IP " && ip route list | grep link | awk '{print $9}' | tr "\n" "  " && echo -n "(" && ip link show | grep link/ether | awk '~{print $2}' | tr "\n" ")" && printf "\n"
 echo "Sudo: "; cat /var/log/sudo/sudologs.log | wc -l | tr "\n" " " && echo "cmd 
+
+Commande wall 
+wall command in Linux system is used to write a message to all users. This command displays a message, or the contents of a file, or otherwise its standard input, on the terminals of all currently logged in users. 
+
+Quest ce quun pare-feu ?
+Érigé entre un ordinateur et sa connexion à un réseau externe ou sur le Web, un pare-feu décide quel trafic réseau est autorisé à traverser et quel trafic est jugé dangereux. Sa fonction principale est de filtrer le bon du mauvais, les éléments fiables des éléments non sécurisés.
+Parmi les types de protection disponibles les plus courants, les pare-feu à inspection dynamique autorisent ou bloquent le trafic en fonction de propriétés techniques, telles que des protocoles, des états ou des ports spécifiques.
+
+Les pare-feu à inspection dynamique prennent des décisions de filtrage pour déterminer si les données peuvent parvenir à l'utilisateur. Ces décisions sont souvent fondées sur des règles établies par l'administrateur lors de la configuration de l'ordinateur et du pare-feu.
+
+Le pare-feu peut également prendre ses propres décisions en se fondant sur les précédentes interactions desquelles il a tiré des conclusions. Par exemple, les types de trafic qui ont causé des interruptions dans le passé seront filtrés à l'avenir.
+
+Proxy
+Un pare-feu proxy est ce qui ressemble le plus à une barrière physique réelle. Contrairement aux autres types de pare-feu, il agit comme un intermédiaire entre les réseaux externes et les ordinateurs, empêchant le contact direct entre les deux.
+
+Comme un gardien, son rôle principal est d'examiner et d'évaluer les données entrantes. Si aucun problème n'est détecté, les données sont autorisées à parvenir jusqu'à l'utilisateur.
+
+L'inconvénient de ce type de dispositif de sécurité lourd est qu'il interfère parfois avec les données entrantes qui ne sont pas une menace, ce qui ralentit les fonctionnalités.
+
+ufw est un frontal pour netfilter / iptables, le mécanisme Linux pour le routage et le filtrage du trafic Internet.
+
+AppArmor support is built into the standard kernels provided by Debian. Enabling AppArmor is thus just a matter of installing some packages by executing apt install apparmor apparmor-profiles apparmor-utils with root privileges.
+AppArmor is functional after the installation, and aa-status will confirm it quickly:
+
+Commande ss 
+En utilisant ss sans options de ligne de commande répertorie les sockets qui ne sont pas à l’écoute. Autrement dit, il répertorie les sockets qui ne sont pas dans l’état d’écoute.
+
+Pour voir cela, tapez ce qui suit:
+
+ss pour socket statistics
+The ss (socket statistics) tool is a CLI command used to show network statistics. The ss command is a simpler and faster version of the now obsolete netstat command. Together with the ip command, ss is essential for gathering network information and troubleshooting network issues.
+    - t et l pour lister toutes les connexions via protocoles
+    -u pour lister les UDP connexions
+    -p To show process IDs (PID), use:
